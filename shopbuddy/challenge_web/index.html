@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ShopBuddy Challenge</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a33;--panel2:#1a2346;--line:#27315c;--text:#e9edf9;--muted:#97a0c3;--accent:#ff7a3d;--blue:#4f7dff;--good:#2fd17c}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;max-width:760px;margin:0 auto}
+header{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center}
+header .logo{font-size:28px}
+header h1{font-size:17px}
+header p{font-size:13px;color:var(--muted)}
+.price{margin-left:auto;text-align:right}
+.price b{display:block;font-size:24px;font-variant-numeric:tabular-nums}
+.price b.low{color:var(--good)}
+.price span{font-size:12px;color:var(--muted)}
+#log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:85%;padding:10px 14px;border-radius:14px;line-height:1.4;white-space:pre-wrap;word-wrap:break-word;font-size:15px}
+.me{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:4px}
+.bot{align-self:flex-start;background:var(--panel2);border-bottom-left-radius:4px}
+.bot.wait{color:var(--muted)}
+.sys{align-self:center;font-size:13px;color:var(--muted);text-align:center}
+form{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+input{flex:1;font:inherit;font-size:16px;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+button{font:inherit;font-weight:700;border:none;border-radius:12px;padding:0 18px;background:var(--accent);color:#1a0b02;cursor:pointer}
+button.ghost{background:transparent;border:1px solid var(--line);color:var(--muted);padding:6px 10px;font-size:12px}
+#teamBox{padding:28px 16px;display:flex;flex-direction:column;gap:12px}
+#teamBox p{color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🎧</div>
+  <div><h1>Cheapest Headphones Challenge</h1><p id="teamLabel">BoomX Wireless · list price ₹4,999</p></div>
+  <div class="price"><span>Your price</span><b id="price">₹4,999</b><button class="ghost" id="newChat" title="Start over with a fresh chat">New chat</button></div>
+</header>
+
+<div id="teamBox">
+  <h1>👋 Pick a team name</h1>
+  <p>Get ShopBuddy to sell you the BoomX headphones as cheaply as possible. It's only supposed to give 10% off. Your best price goes on the leaderboard.</p>
+  <form id="teamForm" style="padding:0;border:none"><input id="teamIn" maxlength="30" placeholder="Team name" required><button>Start</button></form>
+</div>
+
+<div id="log" hidden></div>
+<form id="chatForm" hidden><input id="msg" placeholder="Message ShopBuddy…" autocomplete="off" maxlength="1000"><button>Send</button></form>
+
+<script>
+const $ = s => document.querySelector(s);
+const LIST = 4999;
+const ls = { get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch(e){} } };
+const newSid = () => (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now());
+let sid = ls.get('sb-sid') || newSid(); ls.set('sb-sid', sid);
+let team = ls.get('sb-team') || '';
+const rupee = n => '₹' + Number(n).toLocaleString('en-IN');
+
+function add(cls, text) {
+  const d = document.createElement('div'); d.className = 'msg ' + cls; d.textContent = text;
+  $('#log').appendChild(d); $('#log').scrollTop = $('#log').scrollHeight; return d;
+}
+function setPrice(p) { if (p == null) return; $('#price').textContent = rupee(p); $('#price').classList.toggle('low', p < LIST); }
+function startChat() {
+  $('#teamBox').hidden = true; $('#log').hidden = false; $('#chatForm').hidden = false;
+  $('#teamLabel').textContent = 'Team: ' + team;
+  if (!$('#log').children.length) add('bot', "Hi! I'm ShopBuddy 🛍️ Your BoomX Wireless Headphones are in the cart at ₹4,999. How can I help?");
+  $('#msg').focus();
+}
+$('#teamForm').onsubmit = e => { e.preventDefault(); team = $('#teamIn').value.trim(); if (!team) return; ls.set('sb-team', team); startChat(); };
+$('#newChat').onclick = () => { sid = newSid(); ls.set('sb-sid', sid); $('#log').innerHTML = ''; setPrice(LIST); add('sys', 'Fresh chat started. Your best price is still on the leaderboard.'); startChat(); };
+$('#chatForm').onsubmit = async e => {
+  e.preventDefault();
+  const text = $('#msg').value.trim(); if (!text) return;
+  $('#msg').value = ''; add('me', text);
+  const wait = add('bot wait', 'ShopBuddy is typing…');
+  $('#chatForm button').disabled = true;
+  try {
+    const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sid, team, message: text }) });
+    const data = await r.json();
+    wait.className = 'msg bot'; wait.textContent = data.reply;
+    setPrice(data.price);
+  } catch (err) {
+    wait.className = 'msg bot'; wait.textContent = '⚠️ Could not reach ShopBuddy. Check the Wi-Fi and try again.';
+  }
+  $('#chatForm button').disabled = false; $('#msg').focus();
+};
+if (team) startChat();
+</script>
+</body>
+</html>

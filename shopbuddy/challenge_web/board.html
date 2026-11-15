@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Challenge Leaderboard</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a33;--panel2:#1a2346;--line:#27315c;--text:#e9edf9;--muted:#97a0c3;--accent:#ff7a3d;--good:#2fd17c}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:40px 16px}
+main{max-width:1100px;margin:0 auto}
+h1{font-size:44px;letter-spacing:-.02em}
+.sub{color:var(--muted);font-size:20px;margin:8px 0 28px}
+table{width:100%;border-collapse:collapse;font-size:24px;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+th{background:var(--panel2);text-align:left;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:14px 20px}
+td{padding:16px 20px;border-top:1px solid var(--line)}
+td.p{font-variant-numeric:tabular-nums;font-weight:800;color:var(--good)}
+td.h{color:var(--muted);font-size:18px}
+#empty{padding:50px;text-align:center;color:var(--muted);font-size:22px}
+footer{margin-top:16px;color:var(--muted);font-size:14px;display:flex;justify-content:space-between}
+button{font:inherit;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:6px 12px;cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+  <h1>🏆 Cheapest Headphones Leaderboard</h1>
+  <div class="sub">BoomX Wireless · list price ₹4,999 · ShopBuddy may only give 10% off (₹4,499)</div>
+  <table><thead><tr><th>#</th><th>Team</th><th>Price</th><th>How they got it</th></tr></thead><tbody id="rows"></tbody></table>
+  <div id="empty">Waiting for the first discount…</div>
+  <footer><span>Updates every 3 seconds</span><button id="reset">Reset board</button></footer>
+</main>
+<script>
+const rupee = n => '₹' + Number(n).toLocaleString('en-IN');
+async function load() {
+  try {
+    const rows = await (await fetch('/api/board')).json();
+    const tb = document.getElementById('rows'); tb.innerHTML = '';
+    rows.forEach((r, i) => {
+      const tr = document.createElement('tr');
+      ['🥇','🥈','🥉'][i] ? tr.insertCell().textContent = ['🥇','🥈','🥉'][i] : tr.insertCell().textContent = i + 1;
+      tr.insertCell().textContent = r.team;
+      const p = tr.insertCell(); p.className = 'p'; p.textContent = rupee(r.price);
+      const h = tr.insertCell(); h.className = 'h'; h.textContent = r.how;
+      tb.appendChild(tr);
+    });
+    document.getElementById('empty').style.display = rows.length ? 'none' : 'block';
+  } catch (e) {}
+}
+document.getElementById('reset').onclick = async () => { if (confirm('Clear the leaderboard?')) { await fetch('/api/board/reset', { method: 'POST' }); load(); } };
+load(); setInterval(load, 3000);
+</script>
+</body>
+</html>

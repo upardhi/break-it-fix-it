@@ -1,0 +1,12 @@
+# Secrets: never commit the API key
+.env
+shopbuddy/.env
+
+# Local tooling and build output
+.claude/
+*.zip
+.venv/
+__pycache__/
+.pytest_cache/
+.adk/
+payments_down.flag
