@@ -77,7 +77,9 @@ python challenge_server.py
 
 **API limits:** 30 students sharing one key will hit the free tier's rate limit. Use a key with billing enabled for the event, or split students across 2–3 keys by running the server on different laptops. If the limit is hit, students see "ShopBuddy is busy, try again in a few seconds".
 
-Ways students can win (keep these for the debrief, not the slides): talk it into a big `give_discount`, extract or use the secret `STAFF-90` coupon, post a review with instructions and then ask it to read the reviews, role-play as staff, or switch language.
+This repo is public, so set your own secret coupon in `.env` (`CHALLENGE_SECRET_COUPON=...`) before the event.
+
+Ways students can win (keep these for the debrief, not the slides): talk it into a big `give_discount`, extract or use the secret staff coupon (`STAFF-90` by default), post a review with instructions and then ask it to read the reviews, role-play as staff, or switch language.
 
 ## How the code matches the slides
 

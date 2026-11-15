@@ -3,17 +3,19 @@
 Materials for a ~45-minute talk by Umashankar P to ~30 final-year students at a Google Developer Community event. Another speaker builds an AI agent; this talk breaks it and fixes it, using **ShopBuddy**, an online-store support agent (Google ADK + Gemini). The human-facing guide is `START-HERE.md`; read it first.
 
 ## Layout
+- `README.md`: GitHub front page with the problem/solution table. Public repo: https://github.com/upardhi/break-it-fix-it
+- `problems/`: one README per problem (`01-makes-things-up`, `02-wrong-tool`, `03-silent-failure`, `04-prompt-injection`, `05-student-challenge`). Each covers the demo with a real run, why it happens, before/after code quoted from the repo, how to try it, and the tests. Code quotes must match the real files.
 - `break-it-fix-it.html`: the presentation. A single self-contained HTML file: 26 slides, keyboard-driven (→ step, N next problem, 1–4 jump). Each problem has 4 slides: Break → Why? (quiz) → Fix (code diff) → Run it again. Fragments reveal in `data-step` order. Text with `data-edit` is editable in the browser (saved to localStorage).
 - `shopbuddy/`: Python project.
   - `broken_agent/agent.py`: **bugs are deliberate**, one per problem. Don't "fix" them.
   - `fixed_agent/agent.py`: the fixes: `get_policy`, `cancel_order`, order-ID regex, refund timeout with max 2 attempts, `guard` via `before_tool_callback` (refunds above ₹5,000 need a human), coupons limited to public ≤10% in code, reviews wrapped in escaped `<review>` tags.
-  - `challenge_agent/`: rules only in the prompt, so students can break it. `challenge_server.py` (FastAPI, port 8001) serves `challenge_web/index.html` (student chat) and `/board` (leaderboard).
+  - `challenge_agent/`: rules only in the prompt, so students can break it. The secret coupon comes from `CHALLENGE_SECRET_COUPON` in `.env` (default `STAFF-90`) because the repo is public. `challenge_server.py` (FastAPI, port 8001) serves `challenge_web/index.html` (student chat) and `/board` (leaderboard).
   - `shopkart/`: fake store data (`data.py`), per-session state (`store.py`), fake payment gateway with a down-switch file (`payments.py`, toggled by `chaos.py`), `run.py` (`load_env`, `run_once` helper), `__init__.py` (MODEL from `SHOPBUDDY_MODEL`, default `gemini-flash-latest`; `truststore` injection).
   - `rehearse.py`: runs the 4 demo prompts on both agents. `try_injections.py`: tests Problem 4 attack variants.
   - `tests/test_tools.py`: 19 offline tests (no API). `tests/test_live_agent.py`: 4 live tests, skipped without a key.
 
 ## Keep these in sync
-Changing a demo means updating all of: the slide in `break-it-fix-it.html`, the demo table in `START-HERE.md` §6 and `shopbuddy/README.md`, `DEMOS` in `rehearse.py`, and the data in `shopkart/data.py`. The fixed agent's approval limit is ₹5,000 in both code and slides.
+Changing a demo means updating all of: the slide in `break-it-fix-it.html`, that problem's README in `problems/`, the demo table in `START-HERE.md` §6 and `shopbuddy/README.md`, `DEMOS` in `rehearse.py`, and the data in `shopkart/data.py`. The fixed agent's approval limit is ₹5,000 in both code and slides.
 
 ## Environment gotchas (Windows)
 - No `python` on PATH; use `uv` (`uv venv --python 3.12`, then `uv pip install --system-certs -r requirements.txt`).

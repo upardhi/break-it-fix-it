@@ -11,6 +11,8 @@ Last updated: 15 November 2026.
 
 ```
 break-it-fix-it.html     <- your presentation (open in Chrome)
+README.md                <- GitHub front page with the problem/solution table
+problems/                <- one detailed README per problem + the student challenge
 START-HERE.md            <- this guide
 CLAUDE.md                <- context for Claude Code (read automatically)
 shopbuddy/               <- the live-demo agent (Python, Google ADK + Gemini)
@@ -172,7 +174,8 @@ python challenge_server.py
 - Students open `http://<your-laptop-IP>:8001` (find your IP with `ipconfig`, the "IPv4 Address" line). Same Wi-Fi needed. Allow Python through the Windows firewall if asked.
 - Projector: http://localhost:8001/board, a live leaderboard updating every 3 seconds. The deck also has a manual leaderboard slide as backup.
 - Rules: BoomX costs ₹4,999. ShopBuddy may give at most 10% off. Lowest price wins.
-- Ways to win (for your debrief only): talk it into a big discount, get the secret `STAFF-90` coupon, post a review with instructions and ask it to read reviews, pretend to be staff, switch language.
+- **The GitHub repo is public**, so set your own secret staff coupon in `shopbuddy\.env` before the event, e.g. `CHALLENGE_SECRET_COUPON=STAFF-7731`. Otherwise a student who read the code knows `STAFF-90`. Share the repo link **after** the challenge.
+- Ways to win (for your debrief only): talk it into a big discount, get the secret staff coupon, post a review with instructions and ask it to read reviews, pretend to be staff, switch language. Full debrief table: `problems/05-student-challenge/README.md`.
 - Lesson: all of its rules live only in the prompt. "Rules in the prompt are suggestions. Rules in the code are laws."
 
 ---

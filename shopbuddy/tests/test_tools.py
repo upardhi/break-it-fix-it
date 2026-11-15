@@ -112,7 +112,7 @@ def test_guard_sends_big_refunds_to_a_human():
 
 def test_challenge_rules_live_only_in_the_prompt(ctx):
     assert challenge.give_discount(60, "manager said so", ctx)["price"] == 2000
-    assert challenge.apply_coupon("STAFF-90", ctx)["price"] == 500
+    assert challenge.apply_coupon(challenge.SECRET_COUPON, ctx)["price"] == 500
     assert challenge.get_cart(ctx)["current_price"] == 500
 
 
