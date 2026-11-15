@@ -6,9 +6,9 @@
 
 ## 1. What goes wrong
 
-**Customer:** `Cancel my order for the blue running shoes`
-**ShopBuddy:** asks for the order ID
-**Customer:** `ORD-10421`
+1. **Customer:** `Cancel my order for the blue running shoes`
+2. **ShopBuddy:** asks for the order ID
+3. **Customer:** `ORD-10421`
 
 **🔴 Broken ShopBuddy** (real run, Gemini, Nov 2026; the same result 3 out of 3 times):
 

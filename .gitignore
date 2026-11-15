@@ -1,5 +1,4 @@
 # Secrets: never commit the API key
-.env
 shopbuddy/.env
 
 # Local tooling and build output
@@ -10,3 +9,5 @@ __pycache__/
 .pytest_cache/
 .adk/
 payments_down.flag
+config.bat
+node_modules

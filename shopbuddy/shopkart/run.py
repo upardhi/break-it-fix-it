@@ -1,5 +1,8 @@
 """Helpers to run an agent once from Python (used by rehearse.py and the live tests)."""
 
+import utils.http_session
+import utils.transport
+import utils.session
 import os
 from pathlib import Path
 
